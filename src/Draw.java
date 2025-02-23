@@ -1,30 +1,29 @@
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Line;
 import javafx.stage.*;
 import javafx.scene.*;
 import javafx.application.Application;
 import javafx.geometry.*;
-import org.w3c.dom.Text;
+
+import java.util.*;
 
 
 public class Draw extends Application {
 
 
     private Stage window;
-    private static final int screenWidth = 1152;
+    private static final int screenWidth = 904;
     private static final int screenHeight = 648;
     private int diameter;
     private Label errorLabel;
     private TextField textField;
+    private List<List<Cell>> cells = new ArrayList<>();
+    private static final int MENU_WIDTH = 256;
 
     /**
      * The main entry point for this program
@@ -36,7 +35,7 @@ public class Draw extends Application {
 
         window = primaryStage;
         window.setTitle("Minecraft Circle Generator");
-        BorderPane layout = createMenuLayout();
+        BorderPane layout = createLayout();
 
         Scene scene = new Scene(layout, screenWidth, screenHeight);
         window.setScene(scene);
@@ -49,10 +48,13 @@ public class Draw extends Application {
      * @return BorderPane which serves as the root container
      * @see #createMenuContainer() for the creation of the right side menu
      */
-    private BorderPane createMenuLayout(){
+    private BorderPane createLayout(){
         BorderPane layout = new BorderPane();
         HBox menuContainer = createMenuContainer();
+        Pane drawPane = createDrawPane();
+
         layout.setRight(menuContainer);
+        layout.setLeft(drawPane);
         return layout;
     }
 
@@ -84,7 +86,8 @@ public class Draw extends Application {
         // The VBox places the different components on different lines
         VBox menuPanel = new VBox(20);
         menuPanel.setStyle("-fx-background-color: #c5c5c5;");
-        menuPanel.setPadding(new Insets(screenWidth * 0.005));
+        menuPanel.setPrefWidth(MENU_WIDTH);
+        menuPanel.setPadding(new Insets(MENU_WIDTH * 0.05));
         menuPanel.setAlignment(Pos.CENTER);
 
         // Using an HBox for my label and text field ensures that they are on the same line
@@ -114,8 +117,8 @@ public class Draw extends Application {
         Label label = new Label("Enter Diameter: ");
 
         textField = new TextField();
-        textField.setPrefColumnCount(10);
         textField.setPromptText("Width/Height");
+        textField.setPrefColumnCount(10);
 
         input.getChildren().addAll(label, textField);
         return input;
@@ -143,6 +146,14 @@ public class Draw extends Application {
         } catch (NumberFormatException nfe) {
             errorLabel.setText("Please enter a round number");
         }
+    }
+
+    private Pane createDrawPane(){
+        Pane drawPane = new Pane();
+        drawPane.setPrefWidth(screenHeight);
+        drawPane.setPrefHeight(screenHeight);
+        drawPane.setStyle("-fx-background-color: #e5e4e2");
+        return drawPane;
     }
 
     public void generateShape(){
