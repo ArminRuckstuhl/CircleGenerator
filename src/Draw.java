@@ -24,6 +24,8 @@ public class Draw extends Application {
     private TextField textField;
     private List<List<Cell>> cells = new ArrayList<>();
     private static final int MENU_WIDTH = 256;
+    private BorderPane layout;
+    private Pane drawPane;
 
     /**
      * The main entry point for this program
@@ -45,13 +47,13 @@ public class Draw extends Application {
     /**
      * Creates the root container for the interface of the program
      *
-     * @return BorderPane which serves as the root container
+     * @return {@link BorderPane} serves as the root container
      * @see #createMenuContainer() for the creation of the right side menu
      */
     private BorderPane createLayout(){
-        BorderPane layout = new BorderPane();
+        layout = new BorderPane();
         HBox menuContainer = createMenuContainer();
-        Pane drawPane = createDrawPane();
+        createDrawPane();
 
         layout.setRight(menuContainer);
         layout.setLeft(drawPane);
@@ -148,16 +150,41 @@ public class Draw extends Application {
         }
     }
 
-    private Pane createDrawPane(){
-        Pane drawPane = new Pane();
+    /**
+     * Creates the zone of the window where the circle schematic will be drawn
+     *
+     * @return {@link Pane} The container of the drawPane
+     */
+    private void createDrawPane(){
+        drawPane = new Pane();
+
+        // Making the pane a square makes it a lot easier to figure out how large each cell should be when drawing it
         drawPane.setPrefWidth(screenHeight);
         drawPane.setPrefHeight(screenHeight);
         drawPane.setStyle("-fx-background-color: #e5e4e2");
-        return drawPane;
     }
 
+    /**
+     * Generates the grid of {@link Cell} objects which represent the circle
+     */
     public void generateShape(){
-        System.out.println(diameter);
+        //Setup
+        double cellSize = screenHeight / diameter; // Resizing the cells based off the circle diameter so they fit the pane
+        cells.clear();
+        drawPane.getChildren().clear();
+
+        // Creating and drawing cells
+        for (int col = 0; col < diameter; col++){
+            List<Cell> fullRow = new ArrayList<>();
+            for (int row = 0; row < diameter; row++){
+                Cell cell = new Cell(row * cellSize, col * cellSize, cellSize, false);
+                fullRow.add(cell);
+                drawPane.getChildren().add(cell.getRectangle());
+            }
+            cells.add(fullRow);
+        }
+
+        layout.setLeft(drawPane); // Re-displaying the drawPane
     }
 
     public static void main(String[] args) {
