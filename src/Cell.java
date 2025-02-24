@@ -1,9 +1,8 @@
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
-import java.awt.*;
-
 public class Cell {
+
     private double xPos;
     private double yPos;
     private double size;
@@ -21,11 +20,43 @@ public class Cell {
     }
 
     /**
+     * Returns the X Position of the top left corner of the cell
+     * @return the current X Position of the cell
+     */
+    public double getxPos() {
+        return xPos;
+    }
+
+    /**
+     * Returns the Y Position of the top left corner of the cell
+     * @return the current Y Position of the cell
+     */
+    public double getyPos() {
+        return yPos;
+    }
+
+    /**
+     * Returns the size of the cell
+     * @return the current total size of the cell, including the 18.5% padding
+     */
+    public double getSize() {
+        return size;
+    }
+
+    /**
+     * Returns the rectangle object so it can be drawn on the drawPane
+     * @return the Rectangle object
+     */
+    public Rectangle getRectangle(){
+        return this.rectangle;
+    }
+
+    /**
      * Calculates the parameters of and then contructs the rectangle objects which make up the cells
      *
      * @see {@link Rectangle} the object used
      */
-    private void createRectangle(){
+    public void createRectangle(){
         double padding = size * PADDING_PERCENTAGE;
         double paddedSize = size - (2 * padding); // Total padding is 18.75%
 
@@ -35,12 +66,13 @@ public class Cell {
         rectangle.setFill(isShaded ? Paint.valueOf("#097969") : Paint.valueOf("#E4D00A"));
     }
 
+
     /**
-     * Returns the rectangle object so it can be drawn on the drawPane
-     *
-     * @return the Rectangle object
+     * Toggles whether a cell is shaded or not
+     * @param isShaded value to set
      */
-    public Rectangle getRectangle(){
-        return this.rectangle;
+    public void setShaded (boolean isShaded){
+        this.isShaded = isShaded;
+        getRectangle().setFill(isShaded ? Paint.valueOf("#097969") : Paint.valueOf("#E4D00A"));
     }
 }

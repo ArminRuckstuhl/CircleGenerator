@@ -4,6 +4,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.stage.*;
 import javafx.scene.*;
@@ -143,7 +144,7 @@ public class Draw extends Application {
         // Checking that number entered is an int
         try {
             diameter = Integer.parseInt(textField.getText());
-            generateShape();
+            generateGrid();
             errorLabel.setText("");
         } catch (NumberFormatException nfe) {
             errorLabel.setText("Please enter a round number");
@@ -165,9 +166,10 @@ public class Draw extends Application {
     }
 
     /**
-     * Generates the grid of {@link Cell} objects which represent the circle
+     * Generates the grid of {@link Cell}
+     * Dimensions of the grid depend on the diameter of circle the user chooses
      */
-    public void generateShape(){
+    public void generateGrid(){
         //Setup
         double cellSize = screenHeight / diameter; // Resizing the cells based off the circle diameter so they fit the pane
         cells.clear();
@@ -184,7 +186,37 @@ public class Draw extends Application {
             cells.add(fullRow);
         }
 
+        // Shading centre cell if diameter is odd
+        if (diameter % 2 == 1) {
+            Cell centre = getCellAt(screenHeight / 2, screenHeight / 2);
+            centre.setShaded(true);
+        }
+
         layout.setLeft(drawPane); // Re-displaying the drawPane
+
+    }
+
+    /**
+     * Finds the {@link Cell} at the specified drawing pane coordinates.
+     *
+     * @param x the X-coordinate within the drawing pane
+     * @param y the Y-coordinate within the drawing pane
+     * @return the {@link Cell} at the specified coordinates, or {@code null} if coordinates
+     *         are outside the grid or invalid
+     */
+    public Cell getCellAt(double x, double y) {
+        if (diameter <= 0 || cells.isEmpty() || x < 0 || y < 0) {
+            return null;
+        }
+
+        double cellSize = screenHeight / diameter;
+        int col = (int) (x / cellSize);
+        int row = (int) (y / cellSize);
+
+        if (row < diameter && col < diameter) {
+            return cells.get(row).get(col);
+        }
+        return null;
     }
 
     public static void main(String[] args) {
