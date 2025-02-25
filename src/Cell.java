@@ -1,6 +1,8 @@
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
+import java.util.Objects;
+
 public class Cell {
 
     private double xPos;
@@ -74,5 +76,25 @@ public class Cell {
     public void setShaded (boolean isShaded){
         this.isShaded = isShaded;
         getRectangle().setFill(isShaded ? Paint.valueOf("#097969") : Paint.valueOf("#E4D00A"));
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append(this.xPos + " " + this.yPos + " " + this.size + " " + this.isShaded);
+        return str.toString();
+    }
+
+    @Override
+    public boolean equals(Object other){
+        if (this == other) return true;
+        if (!(other instanceof Cell)) return false;
+        Cell otherCell = (Cell)other;
+        return this.xPos == otherCell.getxPos() && this.yPos == otherCell.getyPos();
+    }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(xPos, yPos);
     }
 }

@@ -4,6 +4,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.stage.*;
 import javafx.scene.*;
@@ -143,8 +145,12 @@ public class Draw extends Application {
         // Checking that number entered is an int
         try {
             diameter = Integer.parseInt(textField.getText());
-            generateGrid();
-            errorLabel.setText("");
+            if (diameter % 2 == 0) errorLabel.setText("Please insert an Odd Number");
+            else {
+                errorLabel.setText("");
+                generateGrid();
+            }
+
         } catch (NumberFormatException nfe) {
             errorLabel.setText("Please enter a round number");
         }
@@ -170,7 +176,7 @@ public class Draw extends Application {
      */
     public void generateGrid(){
         //Setup
-        double cellSize = screenHeight / diameter; // Resizing the cells based off the circle diameter so they fit the pane
+        double cellSize = (double)screenHeight / diameter; // Resizing the cells based off the circle diameter so they fit the pane
         cells.clear();
         drawPane.getChildren().clear();
 
@@ -187,7 +193,7 @@ public class Draw extends Application {
 
         // Shading centre cell if diameter is odd
         if (diameter % 2 == 1) {
-            Cell centre = getCellAtPixel(screenHeight / 2, screenHeight / 2);
+            Cell centre = getCellFromGrid((diameter - 1) / 2, (diameter - 1) / 2);
             centre.setShaded(true);
         }
 
@@ -243,12 +249,6 @@ public class Draw extends Application {
         layout.setLeft(drawPane);
     }
 
-    public void shadeCellCoordinate(int x, int y, boolean shade){
-        Cell cell = getCellAtPixel(x, y);
-        cell.setShaded(shade);
-        layout.setLeft(drawPane);
-    }
-
     /**
      * Draws the circle using the Mid-Point Circle Algorithm
      *  Credit to <a href="https://www.youtube.com/watch?v=hpiILbMkF9w">The Midpoint Circle Algorithm Explained Step by Step</a>
@@ -256,6 +256,7 @@ public class Draw extends Application {
     public void drawCircle(){
         int radius = diameter / 2;
         int centre = (diameter - 1) / 2;
+        Set<List<Integer>> circleCells = new HashSet<>();
 
         // Initial coordinates, top of circle
         int x = 0;
@@ -271,21 +272,26 @@ public class Draw extends Application {
                 decision += 2 * x + 1; // Updating the decision value if Y is the same
             }
 
-            // System.out.println(x + " " + y + " " + centre);
-
-            // Shading all 8 octets of the circle
-            shadeCell(centre + x, centre + y, true);
-            shadeCell(centre - x, centre + y, true);
-            shadeCell(centre + x, centre - y, true);
-            shadeCell(centre - x, centre - y, true);
-            shadeCell(centre + y, centre + x, true);
-            shadeCell(centre + y, centre - x, true);
-            shadeCell(centre - y, centre + x, true);
-            shadeCell(centre - y, centre - x, true);
+            // Calculating all 8 octets of the circle
+            circleCells.add(Arrays.asList(centre + x, centre + y));
+            circleCells.add(Arrays.asList(centre - x, centre + y));
+            circleCells.add(Arrays.asList(centre + x, centre - y));
+            circleCells.add(Arrays.asList(centre - x, centre - y));
+            circleCells.add(Arrays.asList(centre + y, centre + x));
+            circleCells.add(Arrays.asList(centre + y, centre - x));
+            circleCells.add(Arrays.asList(centre - y, centre + x));
+            circleCells.add(Arrays.asList(centre - y, centre - x));
 
             x++;
 
         }
+        // Displaying the cells of the circle
+        for (List coordinates : circleCells){
+            int xCoord = (int) coordinates.get(0);
+            int yCoord = (int) coordinates.get(1);
+            shadeCell(xCoord, yCoord, true);
+        }
+
     }
 
     public static void main(String[] args) {
