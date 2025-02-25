@@ -1,19 +1,23 @@
-
+import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
-import javafx.stage.*;
-import javafx.scene.*;
-import javafx.application.Application;
-import javafx.geometry.*;
+import javafx.stage.Stage;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class Draw extends Application {
+public class DrawCopy extends Application {
 
 
     private Stage window;
@@ -245,6 +249,7 @@ public class Draw extends Application {
 
     public void shadeCellCoordinate(int x, int y, boolean shade){
         Cell cell = getCellAtPixel(x, y);
+        if (cell == null) return;
         cell.setShaded(shade);
         layout.setLeft(drawPane);
     }
@@ -254,37 +259,72 @@ public class Draw extends Application {
      *  Credit to <a href="https://www.youtube.com/watch?v=hpiILbMkF9w">The Midpoint Circle Algorithm Explained Step by Step</a>
      */
     public void drawCircle(){
-        int radius = diameter / 2;
-        int centre = (diameter - 1) / 2;
+        if (diameter % 2 == 1) {
+            int radius = diameter / 2;
+            int centre = (diameter - 1) / 2;
 
-        // Initial coordinates, top of circle
-        int x = 0;
-        int y = -radius;
-        double decision = -radius + 0.25;
+            // Initial coordinates, top of circle
+            int x = 0;
+            int y = -radius;
+            double decision = -radius + 0.25;
 
-        while (x < -y) {
-            // Figuring out if the Y value should increment or not
-            if (decision > 0) {
-                y++;
-                decision += 2 * (x + y) + 1; // Updating the decision value if Y is incremented
-            } else {
-                decision += 2 * x + 1; // Updating the decision value if Y is the same
+            while (x < -y) {
+                // Figuring out if the Y value should increment or not
+                if (decision > 0) {
+                    y++;
+                    decision += 2 * (x + y) + 1; // Updating the decision value if Y is incremented
+                } else {
+                    decision += 2 * x + 1; // Updating the decision value if Y is the same
+                }
+
+                // System.out.println(x + " " + y + " " + centre);
+
+                // Shading all 8 octets of the circle
+                shadeCell(centre + x, centre + y, true);
+                shadeCell(centre - x, centre + y, true);
+                shadeCell(centre + x, centre - y, true);
+                shadeCell(centre - x, centre - y, true);
+                shadeCell(centre + y, centre + x, true);
+                shadeCell(centre + y, centre - x, true);
+                shadeCell(centre - y, centre + x, true);
+                shadeCell(centre - y, centre - x, true);
+
+                x++;
+
             }
+        } else {
+            int radius = screenHeight / 2;
+            int centre = screenHeight / 2;
 
-            // System.out.println(x + " " + y + " " + centre);
+            // Initial coordinates, top of circle
+            int x = 0;
+            int y = -radius;
+            double decision = -radius + 0.25;
 
-            // Shading all 8 octets of the circle
-            shadeCell(centre + x, centre + y, true);
-            shadeCell(centre - x, centre + y, true);
-            shadeCell(centre + x, centre - y, true);
-            shadeCell(centre - x, centre - y, true);
-            shadeCell(centre + y, centre + x, true);
-            shadeCell(centre + y, centre - x, true);
-            shadeCell(centre - y, centre + x, true);
-            shadeCell(centre - y, centre - x, true);
+            while (x < -y) {
+                // Figuring out if the Y value should increment or not
+                if (decision > 0) {
+                    y++;
+                    decision += 2 * (x + y) + 1; // Updating the decision value if Y is incremented
+                } else {
+                    decision += 2 * x + 1; // Updating the decision value if Y is the same
+                }
 
-            x++;
+                System.out.println(x + " " + y + " " + centre);
 
+                // Shading all 8 octets of the circle
+                shadeCellCoordinate(centre + x, centre + y, true);
+                shadeCellCoordinate(centre - x, centre + y, true);
+                shadeCellCoordinate(centre + x, centre - y, true);
+                shadeCellCoordinate(centre - x, centre - y, true);
+                shadeCellCoordinate(centre + y, centre + x, true);
+                shadeCellCoordinate(centre + y, centre - x, true);
+                shadeCellCoordinate(centre - y, centre + x, true);
+                shadeCellCoordinate(centre - y, centre - x, true);
+
+                x++;
+
+            }
         }
     }
 
